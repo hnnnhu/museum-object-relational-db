@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+scripts/10_ecpg_demo.c
+scripts/ecpg_demo
