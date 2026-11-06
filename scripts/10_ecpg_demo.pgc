@@ -1,0 +1,74 @@
+/* =====================================================================
+ * 10_ecpg_demo.pgc – SQL NHÚNG thực sự (Embedded SQL trong C, tiền biên dịch bằng ECPG)
+ * Khác với psycopg2/JDBC (API gọi hàm – SQL/CLI): ở đây câu lệnh SQL viết thẳng trong mã C
+ * với tiền tố EXEC SQL, biến chủ (host variable) có dấu ':' và con trỏ (cursor) khai báo tĩnh.
+ *
+ * Biên dịch & chạy:
+ *   ecpg 10_ecpg_demo.pgc
+ *   gcc -o ecpg_demo 10_ecpg_demo.c -I$(pg_config --includedir) -L$(pg_config --libdir) -lecpg
+ *   PGPASSWORD=postgres ./ecpg_demo
+ * ===================================================================== */
+#include <stdio.h>
+#include <stdlib.h>
+
+EXEC SQL INCLUDE sqlca;
+EXEC SQL WHENEVER SQLERROR SQLPRINT;
+
+int main(void)
+{
+    EXEC SQL BEGIN DECLARE SECTION;
+        const char *dich   = "baotang@localhost:5432";
+        const char *nguoi  = "postgres";
+        char  loai_chu[10] = "Nôm";
+        int   so_trang_min = 80;
+        char  ma_hv[16];
+        char  ten[256];
+        int   so_trang;
+        int   so_muc;
+        char  ten_phong[16] = "P401";
+        int   suc_chua, dang_co;
+    EXEC SQL END DECLARE SECTION;
+
+    EXEC SQL CONNECT TO :dich USER :nguoi;
+    if (sqlca.sqlcode != 0) { fprintf(stderr, "Không kết nối được\n"); return 1; }
+    EXEC SQL SET search_path = bt, public;
+
+    /* 1. Con trỏ có tham số là biến chủ: tài liệu chữ Nôm trên 80 trang (Q11) */
+    EXEC SQL DECLARE c_tai_lieu CURSOR FOR
+        SELECT ma_hv, ten, so_trang, coalesce(array_length(muc_luc, 1), 0)
+        FROM tai_lieu_co
+        WHERE loai_chu = :loai_chu AND so_trang > :so_trang_min
+        ORDER BY so_trang DESC;
+
+    EXEC SQL OPEN c_tai_lieu;
+    EXEC SQL WHENEVER NOT FOUND DO BREAK;
+    printf("Tài liệu chữ %s trên %d trang:\n", loai_chu, so_trang_min);
+    for (;;) {
+        EXEC SQL FETCH NEXT FROM c_tai_lieu INTO :ma_hv, :ten, :so_trang, :so_muc;
+        printf("  %-10s %-20s %4d trang, %d mục lục\n", ma_hv, ten, so_trang, so_muc);
+    }
+    EXEC SQL WHENEVER NOT FOUND CONTINUE;
+    EXEC SQL CLOSE c_tai_lieu;
+
+    /* 2. SELECT … INTO một dòng: mức lấp đầy phòng (Q10) */
+    EXEC SQL SELECT p.suc_chua, count(h.id)
+             INTO :suc_chua, :dang_co
+             FROM phong_trung_bay p
+             LEFT JOIN hien_vat h ON h.ma_phong = p.ma_phong AND h.trang_thai = 'trung_bay'
+             WHERE p.ma_phong = :ten_phong
+             GROUP BY p.suc_chua;
+    printf("Phòng %s: đang trưng bày %d/%d\n", ten_phong, dang_co, suc_chua);
+
+    /* 3. Gọi thủ tục trong giao dịch rồi hoàn tác (không làm đổi dữ liệu mẫu) */
+    EXEC SQL WHENEVER SQLERROR CONTINUE;
+    EXEC SQL CALL chuyen_phong('HV-000003', 'P401');
+    printf("CALL chuyen_phong('HV-000003','P401'): sqlcode = %ld%s\n", sqlca.sqlcode,
+           sqlca.sqlcode == 0 ? " (thành công)" : "");
+    EXEC SQL CALL chuyen_phong('HV-000008', 'P401');
+    printf("CALL chuyen_phong('HV-000008','P401'): sqlcode = %ld, thông báo: %.*s\n", sqlca.sqlcode,
+           sqlca.sqlerrm.sqlerrml, sqlca.sqlerrm.sqlerrmc);
+    EXEC SQL ROLLBACK;
+
+    EXEC SQL DISCONNECT ALL;
+    return 0;
+}
