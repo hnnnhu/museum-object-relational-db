@@ -1,0 +1,33 @@
+ Ca  |                                  Nội dung                                  |  Mong đợi  |  Thực tế   |    Kết luận     |                                     Thông báo lỗi                                      
+-----+----------------------------------------------------------------------------+------------+------------+-----------------+----------------------------------------------------------------------------------------
+ V1  | [Kế thừa thuần] Trùng mã giữa hai bảng con                                 | Bị từ chối | Chấp nhận  | Xác nhận vấn đề | 
+ V2  | [Kế thừa thuần] Khóa ngoại tới bảng cha, đích nằm ở bảng con               | Chấp nhận  | Bị từ chối | Xác nhận vấn đề | insert or update on table "anh" violates foreign key constraint "anh_id_hv_fkey"
+ T1  | Chèn trực tiếp vào lớp trừu tượng hien_vat                                 | Bị từ chối | Bị từ chối | Đạt             | hien_vat là lớp trừu tượng: hãy chèn vào một bảng con
+ T2  | Trùng mã hiện vật giữa tranh và tuong                                      | Bị từ chối | Bị từ chối | Đạt             | duplicate key value violates unique constraint "dinh_danh_hien_vat_ma_hv_key"
+ T3  | Mã sai định dạng                                                           | Bị từ chối | Bị từ chối | Đạt             | value for domain ma_hien_vat violates check constraint "ma_hien_vat_check"
+ T4  | Ảnh tham chiếu một tượng (đối tượng ở bảng con)                            | Chấp nhận  | Chấp nhận  | Đạt             | 
+ T5  | Ảnh tham chiếu hiện vật không tồn tại                                      | Bị từ chối | Bị từ chối | Đạt             | insert or update on table "anh" violates foreign key constraint "anh_id_hv_fkey"
+ T6  | CHECK kế thừa: kích thước âm ở lớp con                                     | Bị từ chối | Bị từ chối | Đạt             | new row for relation "tranh" violates check constraint "ck_kich_thuoc_duong"
+ T7  | CHECK kế thừa: trưng bày mà không có phòng                                 | Bị từ chối | Bị từ chối | Đạt             | new row for relation "tuong" violates check constraint "ck_trung_bay_co_phong"
+ T8  | Thành phần cha thuộc hiện vật khác                                         | Bị từ chối | Bị từ chối | Đạt             | Thành phần cha 2 thuộc hiện vật khác
+ T9  | Tạo chu trình: gắn Tượng Quá khứ dưới Bệ sen của chính nó                  | Bị từ chối | Bị từ chối | Đạt             | Tạo chu trình trong cấu trúc thành phần (ma_tp=2)
+ T10 | Đổi OID của đối tượng                                                      | Bị từ chối | Bị từ chối | Đạt             | Không được thay đổi định danh đối tượng (OID) 1
+ T11 | Chèn trực tiếp vào lớp trừu tượng tai_nguyen_so                            | Bị từ chối | Bị từ chối | Đạt             | tai_nguyen_so là lớp trừu tượng: hãy chèn vào một bảng con
+ T12 | Xóa tượng: thành phần, ảnh, video, tác giả, lịch sử, định danh bị xóa theo | Chấp nhận  | Chấp nhận  | Đạt             | 
+ T13 | Đổi mã hiện vật: bảng định danh được đồng bộ                               | Chấp nhận  | Chấp nhận  | Đạt             | 
+ T14 | Thêm ảnh đại diện thứ hai cho cùng hiện vật                                | Bị từ chối | Bị từ chối | Đạt             | duplicate key value violates unique constraint "ux_anh_dai_dien"
+ T15 | set<string>: từ khóa trùng trong cùng hiện vật                             | Bị từ chối | Bị từ chối | Đạt             | new row for relation "tranh" violates check constraint "ck_tu_khoa_khong_trung"
+ T16 | Video làm ảnh đại diện                                                     | Bị từ chối | Bị từ chối | Đạt             | new row for relation "video" violates check constraint "video_la_dai_dien_check"
+ T17 | [B] Hiện vật ở bảng cha nhưng không có dòng bảng con (R1 toàn phần)        | Bị từ chối | Bị từ chối | Đạt             | Hiện vật 100 chưa thuộc lớp con nào (R1 toàn phần)
+ T18 | [B] Hiện vật có đủ dòng bảng cha và bảng con                               | Chấp nhận  | Chấp nhận  | Đạt             | 
+ T19 | [B] Không giao: thêm dòng tượng cho một hiện vật đã là tranh               | Bị từ chối | Bị từ chối | Đạt             | insert or update on table "tuong" violates foreign key constraint "tuong_id_loai_fkey"
+ T20 | Chuyển hiện vật thứ 3 vào phòng P401 (sức chứa 2)                          | Bị từ chối | Bị từ chối | Đạt             | PhongDaDay: phòng P401 đã đủ 2 hiện vật
+
+ Số ca T đạt 
+-------------
+ 20/20
+
+ so_dinh_danh | so_doi_tuong | so_dong_lech_loai 
+--------------+--------------+-------------------
+            9 |            9 |                 0
+

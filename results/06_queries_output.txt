@@ -1,0 +1,142 @@
+===== Q1 – Mọi hiện vật kèm lớp thực và tuổi (truy vấn đa hình, phương thức) =====
+     lop     |   ma_hv   |             ten              |   nien_dai_mo_ta   | tuoi 
+-------------+-----------+------------------------------+--------------------+------
+ tranh       | HV-000001 | Vườn xuân                    | 1938               |   88
+ tranh       | HV-000002 | Thiếu nữ bên hoa             | 1943               |   83
+ tranh       | HV-000003 | Phố cũ                       | Khoảng 1965–1970   |   61
+ tuong       | HV-000004 | Bộ tượng Tam Thế             | Thế kỷ XVIII       |  326
+ tuong       | HV-000005 | Tượng vũ nữ Apsara           | Thế kỷ XI          | 1026
+ tuong       | HV-000006 | Tượng ngựa đồng              | 1950               |   76
+ tai_lieu_co | HV-000007 | Sắc phong thời Lê Trung Hưng | 1740               |  286
+ tai_lieu_co | HV-000008 | Gia phả họ Phạm              | Nửa sau thế kỷ XIX |  176
+ tai_lieu_co | HV-000009 | Truyện thơ Nôm               | 1870               |  156
+
+===== Q2 – Tượng bằng đồng có niên đại trước 1960 (lớp con, ép kiểu xuống) =====
+   ma_hv   |       ten       | chat_lieu_chinh | ky_thuat | trong_luong_kg | cao_cm 
+-----------+-----------------+-----------------+----------+----------------+--------
+ HV-000006 | Tượng ngựa đồng | Đồng            | Đúc      |          12.50 |  40.00
+
+===== Q3 – Hiện vật có niên đại giao với khoảng 1900–1950 (thuộc tính cấu trúc, kiểu khoảng) =====
+  lop  |   ma_hv   |       ten        |  nien_dai   
+-------+-----------+------------------+-------------
+ tranh | HV-000001 | Vườn xuân        | [1938,1939)
+ tranh | HV-000002 | Thiếu nữ bên hoa | [1943,1944)
+ tuong | HV-000006 | Tượng ngựa đồng  | [1950,1951)
+
+                         QUERY PLAN                         
+------------------------------------------------------------
+ Append
+   ->  Seq Scan on hien_vat h_1
+         Filter: (nien_dai && '[1900,1951)'::int4range)
+   ->  Index Scan using ix_tranh_nien_dai on tranh h_2
+         Index Cond: (nien_dai && '[1900,1951)'::int4range)
+   ->  Index Scan using ix_tuong_nien_dai on tuong h_3
+         Index Cond: (nien_dai && '[1900,1951)'::int4range)
+   ->  Index Scan using ix_tlc_nien_dai on tai_lieu_co h_4
+         Index Cond: (nien_dai && '[1900,1951)'::int4range)
+
+===== Q4 – Toàn bộ cây thành phần của Bộ tượng Tam Thế (đệ quy) =====
+ muc |            duong_dan            | so_luong 
+-----+---------------------------------+----------
+   1 | Tượng Hiện tại                  |        1
+   2 | Tượng Hiện tại > Bệ sen         |        1
+   2 | Tượng Hiện tại > Vầng hào quang |        1
+   1 | Tượng Quá khứ                   |        1
+   2 | Tượng Quá khứ > Bệ sen          |        1
+   2 | Tượng Quá khứ > Vầng hào quang  |        1
+   1 | Tượng Vị lai                    |        1
+   2 | Tượng Vị lai > Bệ sen           |        1
+   3 | Tượng Vị lai > Bệ sen > Chốt gỗ |        4
+
+----- Q4b – cùng ngữ nghĩa với OQL (b): gọi phương thức tat_ca_hau_due() -----
+      goc       |    hau_due     | so_luong 
+----------------+----------------+----------
+ Tượng Hiện tại | Bệ sen         |        1
+ Tượng Hiện tại | Vầng hào quang |        1
+ Tượng Quá khứ  | Bệ sen         |        1
+ Tượng Quá khứ  | Vầng hào quang |        1
+ Tượng Vị lai   | Bệ sen         |        1
+ Tượng Vị lai   | Chốt gỗ        |        4
+
+===== Q5 – Tác giả và số hiện vật theo từng lớp (biểu thức đường dẫn, gom nhóm) =====
+        tac_gia        |     lop     | so_hien_vat |                           hien_vat                           
+-----------------------+-------------+-------------+--------------------------------------------------------------
+ Lê Quang Cường        | tranh       |           1 | Phố cũ (tác giả chính)
+ Lê Quang Cường        | tuong       |           1 | Tượng ngựa đồng (tác giả chính)
+ Nghệ nhân khuyết danh | tuong       |           2 | Bộ tượng Tam Thế (nghệ nhân); Tượng vũ nữ Apsara (nghệ nhân)
+ Nguyễn Văn An         | tranh       |           1 | Vườn xuân (tác giả chính)
+ Phạm Đức Dũng         | tai_lieu_co |           1 | Gia phả họ Phạm (người chép)
+ Trần Thị Bình         | tranh       |           2 | Thiếu nữ bên hoa (tác giả chính); Vườn xuân (đồng tác giả)
+
+===== Q6 – Hiện vật có trên 3 ảnh và có ít nhất một video (tập hợp lồng, lượng từ ∃) =====
+   ma_hv   |             ten              | so_anh | so_video 
+-----------+------------------------------+--------+----------
+ HV-000001 | Vườn xuân                    |      4 |        1
+ HV-000004 | Bộ tượng Tam Thế             |      4 |        1
+ HV-000007 | Sắc phong thời Lê Trung Hưng |      4 |        1
+
+===== Q7 – Mô tả ngắn đa hình (phương thức đa hình, ràng buộc muộn) =====
+   ma_hv   |                          mo_ta                          
+-----------+---------------------------------------------------------
+ HV-000001 | Tranh Vườn xuân, chất liệu Sơn mài
+ HV-000002 | Tranh Thiếu nữ bên hoa, chất liệu Sơn dầu
+ HV-000003 | Tranh Phố cũ, chất liệu Sơn dầu
+ HV-000004 | Tượng Bộ tượng Tam Thế, Gỗ mít, kỹ thuật Tạc
+ HV-000005 | Tượng Tượng vũ nữ Apsara, Sa thạch, kỹ thuật Chạm khắc
+ HV-000006 | Tượng Tượng ngựa đồng, Đồng, kỹ thuật Đúc
+ HV-000007 | Tài liệu Sắc phong thời Lê Trung Hưng, chữ Hán, 1 trang
+ HV-000008 | Tài liệu Gia phả họ Phạm, chữ Nôm, 86 trang
+ HV-000009 | Tài liệu Truyện thơ Nôm, chữ Nôm, 134 trang
+
+===== Q8 – Hiện vật đang trưng bày trong triển lãm đang diễn ra (nhiều quan hệ, lớp kết hợp) =====
+      trien_lam       |       vi_tri        |   ma_hv   |             ten              |          phong          |        anh_dai_dien         
+----------------------+---------------------+-----------+------------------------------+-------------------------+-----------------------------
+ Di sản Hán Nôm       | Tủ kính 1           | HV-000007 | Sắc phong thời Lê Trung Hưng | Phòng Thư tịch          | s3://kho-so/HV-000007/1.jpg
+ Hồn Việt qua sơn mài | Sảnh A – vách chính | HV-000001 | Vườn xuân                    | Phòng Mỹ thuật hiện đại | s3://kho-so/HV-000001/1.jpg
+ Hồn Việt qua sơn mài | Sảnh A – vách phải  | HV-000002 | Thiếu nữ bên hoa             | Phòng Mỹ thuật hiện đại | s3://kho-so/HV-000002/1.jpg
+
+===== Q9 – Tác giả có tác phẩm thuộc ít nhất hai lớp =====
+     ho_ten     | so_lop |   cac_lop    
+----------------+--------+--------------
+ Lê Quang Cường |      2 | tranh, tuong
+
+===== Q10 – Mức lấp đầy của từng phòng (duyệt quan hệ nghịch đảo) =====
+ ma_phong |           ten           | suc_chua | dang_trung_bay | ty_le_lap_day 
+----------+-------------------------+----------+----------------+---------------
+ P401     | Phòng chuyên đề nhỏ     |        2 |              1 |          50.0
+ P101     | Phòng Mỹ thuật hiện đại |       60 |              2 |           3.3
+ P201     | Phòng Điêu khắc         |       40 |              1 |           2.5
+ P301     | Phòng Thư tịch          |       80 |              1 |           1.3
+
+===== Q11 – Tài liệu chữ Nôm trên 80 trang và mục lục (kiểu array, chỉ số) =====
+   ma_hv   |       ten       | so_trang |                  muc_luc                  | so_muc | muc_dau 
+-----------+-----------------+----------+-------------------------------------------+--------+---------
+ HV-000009 | Truyện thơ Nôm  |      134 | {"Hồi 1","Hồi 2","Hồi 3"}                 |      3 | Hồi 1
+ HV-000008 | Gia phả họ Phạm |       86 | {"Lời tựa","Phả ký","Thế thứ","Phụ chép"} |      4 | Lời tựa
+
+===== Q12 – Hiện vật có tổng số thành phần trên mức trung bình (phương thức trong vị từ) =====
+   ma_hv   |       ten        | tong_tp | trung_binh 
+-----------+------------------+---------+------------
+ HV-000001 | Vườn xuân        |       6 |       2.00
+ HV-000004 | Bộ tượng Tam Thế |      12 |       2.00
+
+===== Q13 – Tập mọi từ khóa (flatten) và túi chất liệu (bag), túi con dấu (bag attribute) =====
+ so_tu_khoa_khac_nhau |                                                                                                  tu_khoa                                                                                                  
+----------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                   24 | Chăm Pa, Hà Nội, Hán, Nôm, Phật giáo, chân dung, chùa, dòng họ, gia phả, gỗ, hoa, mùa xuân, phong cảnh, phố, sa thạch, sơn mài, sắc phong, thiếu nữ, triều Lê, truyện thơ, văn học, vũ nữ, đồng, động vật
+
+   ma_hv   |                                             bag_chat_lieu                                              | so_phan_tu | so_gia_tri_khac_nhau 
+-----------+--------------------------------------------------------------------------------------------------------+------------+----------------------
+ HV-000004 | {"Gỗ lim","Gỗ mít","Gỗ mít","Gỗ mít","Gỗ mít","Gỗ mít","Gỗ mít","Gỗ mít thếp vàng","Gỗ mít thếp vàng"} |          9 |                    3
+
+   ma_hv   |                 con_dau                 | so_phan_tu 
+-----------+-----------------------------------------+------------
+ HV-000007 | {"Sắc mệnh chi bảo","Sắc mệnh chi bảo"} |          2
+ HV-000008 | {"Ấn họ Phạm"}                          |          1
+
+===== Q14 – Bộ sưu tập mà mọi hiện vật đều có hơn 3 ảnh (lượng từ ∀) =====
+            ten             
+----------------------------
+ Mỹ thuật hiện đại Việt Nam
+ Thư tịch Hán Nôm
+

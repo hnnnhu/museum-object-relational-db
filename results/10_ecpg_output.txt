@@ -1,0 +1,6 @@
+Tài liệu chữ Nôm trên 80 trang:
+  HV-000009  Truyện thơ Nôm    134 trang, 3 mục lục
+  HV-000008  Gia phả họ Phạm   86 trang, 4 mục lục
+Phòng P401: đang trưng bày 1/2
+CALL chuyen_phong('HV-000003','P401'): sqlcode = 0 (thành công)
+CALL chuyen_phong('HV-000008','P401'): sqlcode = -400, thông báo: PhongDaDay: phòng P401 đã đủ 2 hiện vật on line 67

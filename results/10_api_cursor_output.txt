@@ -1,0 +1,5 @@
+HV-000001 Vườn xuân          kích thước=(Decimal('120.00'), Decimal('240.00'), Decimal('3.00')) (kiểu kich_thuoc), từ khóa=['sơn mài', 'phong cảnh', 'mùa xuân'] (kiểu list), diện tích=28800.0000 cm²
+HV-000002 Thiếu nữ bên hoa   kích thước=(Decimal('80.00'), Decimal('60.00'), Decimal('2.00')) (kiểu kich_thuoc), từ khóa=['chân dung', 'thiếu nữ', 'hoa'] (kiểu list), diện tích=4800.0000 cm²
+HV-000003 Phố cũ             kích thước=(Decimal('55.00'), Decimal('75.00'), Decimal('2.00')) (kiểu kich_thuoc), từ khóa=['phố', 'phong cảnh', 'Hà Nội'] (kiểu list), diện tích=4125.0000 cm²
+Dòng được cập nhật qua WHERE CURRENT OF: [('HV-000001', 'Đã kiểm kê, diện tích 28800.0000 cm²'), ('HV-000002', 'Đã kiểm kê, diện tích 4800.0000 cm²'), ('HV-000003', 'Đã kiểm kê, diện tích 4125.0000 cm²')]
+Tìm với chuỗi độc hại làm tham số → số dòng: 0

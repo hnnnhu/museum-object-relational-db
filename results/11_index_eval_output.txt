@@ -1,0 +1,27 @@
+Ca  Truy vấn                                      Chỉ mục                 Dòng  Có CM (ms)  Không CM (ms)    Lợi
+I1  Niên đại giao 1945–1946 (chọn lọc cao)        GiST int4range         2,007        1.57          12.19   7.8×
+I2  Niên đại giao 1900–1950 (≈22% số dòng, = P4)  GiST int4range        13,046        8.01          12.10   1.5×
+I3  Từ khóa chu_de_7 (≈1,7%, = P10)               GIN text[]             1,000        3.76          15.77   4.2×
+I4  EXIF ISO 800 và Canon (≈4%)                   GIN jsonb_path_ops     2,857        3.55          35.00   9.9×
+I5  EXIF Canon (≈33%, = P11)                      GIN jsonb_path_ops    79,999       37.11          58.48   1.6×
+I6  Tượng đồng (= điều kiện của P3)               B-tree                 3,000        0.49           1.49   3.0×
+
+Kế hoạch thực thi (loại nút quét):
+  I1: có chỉ mục → Bitmap Heap Scan, Bitmap Index Scan, Seq Scan
+      không chỉ mục → Seq Scan
+      chi tiết: Seq Scan(hien_vat); Bitmap Heap Scan(tranh); Bitmap Index Scan(ix_tranh_nien_dai); Bitmap Heap Scan(tuong); Bitmap Index Scan(ix_tuong_nien_dai); Bitmap Heap Scan(tai_lieu_co); Bitmap Index Scan(ix_tlc_nien_dai)
+  I2: có chỉ mục → Bitmap Heap Scan, Bitmap Index Scan, Seq Scan
+      không chỉ mục → Seq Scan
+      chi tiết: Seq Scan(hien_vat); Seq Scan(tranh); Bitmap Heap Scan(tuong); Bitmap Index Scan(ix_tuong_nien_dai); Bitmap Heap Scan(tai_lieu_co); Bitmap Index Scan(ix_tlc_nien_dai)
+  I3: có chỉ mục → Bitmap Heap Scan, Bitmap Index Scan, Seq Scan
+      không chỉ mục → Seq Scan
+      chi tiết: Seq Scan(hien_vat); Bitmap Heap Scan(tranh); Bitmap Index Scan(ix_tranh_tk); Bitmap Heap Scan(tuong); Bitmap Index Scan(ix_tuong_tk); Bitmap Heap Scan(tai_lieu_co); Bitmap Index Scan(ix_tlc_tk)
+  I4: có chỉ mục → Bitmap Heap Scan, Bitmap Index Scan
+      không chỉ mục → Seq Scan
+      chi tiết: Bitmap Heap Scan(anh); Bitmap Index Scan(ix_anh_exif)
+  I5: có chỉ mục → Bitmap Heap Scan, Bitmap Index Scan
+      không chỉ mục → Seq Scan
+      chi tiết: Bitmap Heap Scan(anh); Bitmap Index Scan(ix_anh_exif)
+  I6: có chỉ mục → Bitmap Heap Scan, Bitmap Index Scan
+      không chỉ mục → Seq Scan
+      chi tiết: Bitmap Heap Scan(tuong); Bitmap Index Scan(ix_tuong_cl)

@@ -1,0 +1,13 @@
+Kiểm tra: 3 cách nạp cho cùng 500 đối tượng – khớp.
+
+Cách nạp                    Lượt gọi/đối tượng    Thời gian 500 đối tượng (ms)   Dòng mã ánh xạ
+B – quan hệ thuần                            5              315 (298–328)                   14
+A – quan hệ–đối tượng                        4              343 (335–366)                   12
+A1 – JSON lồng                               1              352 (334–372)                   19
+
+Số đo: thời gian khứ hồi một lượt gọi rỗng (client và server cùng máy) = 0.054 ms
+
+Phân tích lý thuyết (ƯỚC TÍNH, không đo): nếu CSDL ở máy khác với thời gian khứ hồi 1 ms,
+  B – quan hệ thuần          riêng chi phí mạng ≈ 5 × 500 × 1 ms = 2.5 s
+  A – quan hệ–đối tượng      riêng chi phí mạng ≈ 4 × 500 × 1 ms = 2.0 s
+  A1 – JSON lồng             riêng chi phí mạng ≈ 1 × 500 × 1 ms = 0.5 s

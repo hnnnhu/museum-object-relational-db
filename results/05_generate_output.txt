@@ -1,0 +1,30 @@
+Time: 0.053 ms
+Time: 0.382 ms
+Time: 0.882 ms
+Time: 0.736 ms
+Time: 3.605 ms
+Time: 0.499 ms
+Time: 0.391 ms
+Time: 1348.990 ms (00:01.349)
+Time: 744.174 ms
+Time: 786.275 ms
+Time: 1.056 ms
+Time: 1504.060 ms (00:01.504)
+Time: 982.291 ms
+Time: 1516.948 ms (00:01.517)
+Time: 1941.960 ms (00:01.942)
+Time: 1115.173 ms (00:01.115)
+Time: 3072.862 ms (00:03.073)
+Time: 48.196 ms
+Time: 40.148 ms
+Time: 134.134 ms
+Time: 6.956 ms
+Time: 19916.438 ms (00:19.916)
+Time: 2881.905 ms (00:02.882)
+Time: 153.427 ms
+ hien_vat | thanh_phan | lien_ket_tac_gia |  anh   | video | dung_luong_a | dung_luong_b 
+----------+------------+------------------+--------+-------+--------------+--------------
+    60000 |     225000 |           120000 | 239997 |  6000 | 156 MB       | 232 MB
+(1 row)
+
+Time: 68.324 ms

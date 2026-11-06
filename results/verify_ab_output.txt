@@ -1,0 +1,14 @@
+Mã     Số dòng A  Số dòng B  MD5 khớp  Nội dung
+P1        60,000     60,000  có        Đa hình, chỉ thuộc tính chung (Q1)
+P2        60,000     60,000  có        Đối tượng đầy đủ, đa hình (thuộc tính chung + riêng)
+P3         2,795      2,795  có        Lớp con + thuộc tính riêng: tượng đồng trước 1960 (Q2)
+P4        13,046     13,046  có        Niên đại giao khoảng 1900–1950 (Q3)
+P5             5          5  có        Cây thành phần của một tượng (Q4, đệ quy)
+P6         6,000      6,000  có        Tác giả × lớp (Q5)
+P7         3,429      3,429  có        Trên 3 ảnh và có video (Q6)
+P8        60,000     60,000  có        Mô tả đa hình – A gọi phương thức từng dòng (Q7)
+P9        60,000     60,000  có        Mô tả đa hình – A viết theo tập hợp (so với B của P8)
+P10        1,000      1,000  có        Tìm theo từ khóa (set<string>)
+P11       79,999     79,999  có        Ảnh theo máy ảnh (dictionary EXIF)
+
+Kết luận: mọi cặp A/B trả cùng kết quả

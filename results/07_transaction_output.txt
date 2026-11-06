@@ -1,0 +1,56 @@
+PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+====================================================================================================
+K1, K2, K2b – tính nguyên tử
+====================================================================================================
+K1  4/4 bước thành công, COMMIT → định danh=1, thành phần=2, tài nguyên=1
+K2  bước 4/4 lỗi (new row for relation "anh" violates check constraint "anh_rong_px_check") → ROLLBACK → định danh=0, thành phần=0, tài nguyên=0
+K2b bước tùy chọn lỗi (new row for relation "video" violates check constraint "video_thoi_luong_giay_check") → ROLLBACK TO SAVEPOINT, COMMIT → định danh=1, thành phần=2, tài nguyên=1, video=0
+
+====================================================================================================
+K3 – hai phiên cạnh tranh sức chứa phòng P401 (sức chứa 2, đang có 1); độ trễ đếm→ghi 1.0 s; mỗi cơ chế 10 lần
+====================================================================================================
+
+--- K3a – READ COMMITTED, không khóa: nhật ký lần chạy đầu ---
+  t=      9 ms  Phiên 1: lần 1: BEGIN, gọi chuyen_phong(HV-000003, P401)
+  t=    213 ms  Phiên 2: lần 1: BEGIN, gọi chuyen_phong(HV-000008, P401)
+  t=   1016 ms  Phiên 1: lần 1: COMMIT
+  t=   1222 ms  Phiên 2: lần 1: COMMIT
+  → P401 sau cùng: 3/2
+
+--- K3b – READ COMMITTED + SELECT … FOR UPDATE trên dòng phòng: nhật ký lần chạy đầu ---
+  t=      9 ms  Phiên 1: lần 1: BEGIN, gọi chuyen_phong(HV-000003, P401)
+  t=    211 ms  Phiên 2: lần 1: BEGIN, gọi chuyen_phong(HV-000008, P401)
+  t=   1021 ms  Phiên 1: lần 1: COMMIT
+  t=   2023 ms  Phiên 2: lần 1: từ chối – PhongDaDay: phòng P401 đã đủ 2 hiện vật
+  → P401 sau cùng: 2/2
+
+--- K3c – SERIALIZABLE, không khóa, thử lại khi lỗi 40001: nhật ký lần chạy đầu ---
+  t=     10 ms  Phiên 1: lần 1: BEGIN, gọi chuyen_phong(HV-000003, P401)
+  t=    213 ms  Phiên 2: lần 1: BEGIN, gọi chuyen_phong(HV-000008, P401)
+  t=   1022 ms  Phiên 1: lần 1: COMMIT
+  t=   1221 ms  Phiên 2: lần 1: lỗi tuần tự hóa 40001 → ROLLBACK, thử lại
+  t=   1231 ms  Phiên 2: lần 2: BEGIN, gọi chuyen_phong(HV-000008, P401)
+  t=   2237 ms  Phiên 2: lần 2: từ chối – PhongDaDay: phòng P401 đã đủ 2 hiện vật
+  → P401 sau cùng: 2/2
+
+--- K3d – REPEATABLE READ, không khóa: nhật ký lần chạy đầu ---
+  t=      9 ms  Phiên 1: lần 1: BEGIN, gọi chuyen_phong(HV-000003, P401)
+  t=    210 ms  Phiên 2: lần 1: BEGIN, gọi chuyen_phong(HV-000008, P401)
+  t=   1017 ms  Phiên 1: lần 1: COMMIT
+  t=   1218 ms  Phiên 2: lần 1: COMMIT
+  → P401 sau cùng: 3/2
+
+Kịch bản Cơ chế                                                 Vi phạm R12  Số lần thử lại      Phiên 2 tổng (ms)  Kết cục phiên 2 (lần đầu)
+K3a      READ COMMITTED, không khóa                                   10/10               0                   1021  COMMIT sau 1 lần
+K3b      READ COMMITTED + SELECT … FOR UPDATE trên dòng phòng          0/10               0                   1823  TỪ CHỐI sau 1 lần
+K3c      SERIALIZABLE, không khóa, thử lại khi lỗi 40001               0/10              10                   2036  TỪ CHỐI sau 2 lần
+K3d      REPEATABLE READ, không khóa                                  10/10               0                   1019  COMMIT sau 1 lần
+
+====================================================================================================
+K4 – hai phiên chèn trùng mã HV-000777 vào hai lớp con
+====================================================================================================
+  Phiên 1: COMMIT tại t=1016 ms
+  Phiên 2: bị chặn 799 ms rồi lỗi: duplicate key value violates unique constraint "dinh_danh_hien_vat_ma_hv_key"
+  → số đối tượng mang mã HV-000777: 1
+
+Đã nạp lại dữ liệu mẫu.

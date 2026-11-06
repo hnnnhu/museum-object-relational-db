@@ -1,0 +1,17 @@
+PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+
+Mã   Nội dung                                                     A trung vị (min–max) ms     B trung vị (min–max) ms   B ÷ A
+P1   Đa hình, chỉ thuộc tính chung (Q1)                            9.93 (7.21–11.77)                6.00 (4.80–7.25)    0.60
+P2   Đối tượng đầy đủ, đa hình (thuộc tính chung + riêng)         12.52 (9.84–20.45)             42.40 (37.68–69.32)    3.39
+P3   Lớp con + thuộc tính riêng: tượng đồng trước 1960 (Q2)        0.99 (0.96–1.38)               8.03 (6.83–10.87)    8.07
+P4   Niên đại giao khoảng 1900–1950 (Q3)                           8.44 (6.64–11.49)                5.02 (4.25–7.66)    0.59
+P5   Cây thành phần của một tượng (Q4, đệ quy)                     0.03 (0.03–0.06)                0.03 (0.02–0.05)    1.00
+P6   Tác giả × lớp (Q5)                                           70.32 (66.30–75.38)             58.53 (57.04–94.41)    0.83
+P7   Trên 3 ảnh và có video (Q6)                                 129.72 (126.33–190.41)          109.37 (105.25–160.02)    0.84
+P8   Mô tả đa hình – A gọi phương thức từng dòng (Q7)            643.20 (604.38–726.96)             49.68 (47.67–88.96)    0.08
+P9   Mô tả đa hình – A viết theo tập hợp (so với B của P8)        28.70 (22.81–40.91)    49.68 (47.67–88.96) [B của P8]    1.73
+P10  Tìm theo từ khóa (set<string>)                                3.95 (0.98–9.97)                7.31 (5.56–9.52)    1.85
+P11  Ảnh theo máy ảnh (dictionary EXIF)                           39.26 (35.86–95.50)             51.17 (48.34–53.94)    1.30
+P12  Chèn 5.000 tranh mới (ghi)                                  202.01 (178.70–361.22)          240.47 (229.50–302.80)    1.19
+
+3 vòng × 6 lần đo (bỏ lần làm nóng) cho mỗi truy vấn; B ÷ A > 1 nghĩa là A nhanh hơn.

@@ -1,0 +1,153 @@
+===== S1 – Truy vấn con tương quan: hiện vật có số ảnh vượt trung bình của CHÍNH lớp nó =====
+  lop  |   ma_hv   |        ten         | so_anh 
+-------+-----------+--------------------+--------
+ tuong | HV-000004 | Bộ tượng Tam Thế   |      4
+ tuong | HV-000005 | Tượng vũ nữ Apsara |      4
+
+===== S2 – Kết nối ngoài + NOT EXISTS: tác giả không có hiện vật nào đang trưng bày =====
+    ho_ten     | so_hien_vat 
+---------------+-------------
+ Phạm Đức Dũng |           1
+
+===== S3 – Kết gộp EXCEPT, UNION: danh sách việc cần làm =====
+   ma_hv   |       ten        |         viec_can_lam         
+-----------+------------------+------------------------------
+ HV-000004 | Bộ tượng Tam Thế | đang bảo quản – kiểm tra lại
+ HV-000008 | Gia phả họ Phạm  | cần đưa ra trưng bày
+ HV-000009 | Truyện thơ Nôm   | đang bảo quản – kiểm tra lại
+
+===== S4 – Hàm cửa sổ RANK, FIRST_VALUE: xếp hạng độ cổ trong từng lớp =====
+     lop     |   ma_hv   |             ten              | tuoi | hang_trong_lop |         co_nhat_lop          
+-------------+-----------+------------------------------+------+----------------+------------------------------
+ tranh       | HV-000001 | Vườn xuân                    |   88 |              1 | Vườn xuân
+ tranh       | HV-000002 | Thiếu nữ bên hoa             |   83 |              2 | Vườn xuân
+ tranh       | HV-000003 | Phố cũ                       |   61 |              3 | Vườn xuân
+ tuong       | HV-000005 | Tượng vũ nữ Apsara           | 1026 |              1 | Tượng vũ nữ Apsara
+ tuong       | HV-000004 | Bộ tượng Tam Thế             |  326 |              2 | Tượng vũ nữ Apsara
+ tuong       | HV-000006 | Tượng ngựa đồng              |   76 |              3 | Tượng vũ nữ Apsara
+ tai_lieu_co | HV-000007 | Sắc phong thời Lê Trung Hưng |  286 |              1 | Sắc phong thời Lê Trung Hưng
+ tai_lieu_co | HV-000008 | Gia phả họ Phạm              |  176 |              2 | Sắc phong thời Lê Trung Hưng
+ tai_lieu_co | HV-000009 | Truyện thơ Nôm               |  156 |              3 | Sắc phong thời Lê Trung Hưng
+
+===== S5 – GROUP BY ROLLUP: số hiện vật theo bộ sưu tập × trạng thái, có tổng phụ =====
+         bo_suu_tap         | trang_thai | so_hien_vat 
+----------------------------+------------+-------------
+ Mỹ thuật hiện đại Việt Nam | trung_bay  |           2
+ Mỹ thuật hiện đại Việt Nam | luu_kho    |           1
+ Mỹ thuật hiện đại Việt Nam | (cộng)     |           3
+ Thư tịch Hán Nôm           | trung_bay  |           1
+ Thư tịch Hán Nôm           | luu_kho    |           1
+ Thư tịch Hán Nôm           | bao_quan   |           1
+ Thư tịch Hán Nôm           | (cộng)     |           3
+ Điêu khắc cổ               | trung_bay  |           2
+ Điêu khắc cổ               | bao_quan   |           1
+ Điêu khắc cổ               | (cộng)     |           3
+ — TỔNG —                   | (cộng)     |           9
+
+===== S6 – WITH RECURSIVE nhân dồn: số chi tiết vật lý thực của Bộ tượng Tam Thế =====
+ muc  | so_nut | so_chi_tiet_thuc 
+------+--------+------------------
+ 1    |      3 |                3
+ 2    |      5 |                5
+ 3    |      1 |                4
+ Tổng |      9 |               12
+
+===== S7 – JSONB @>, #>>, ->>: hiện vật khai quật; thống kê ảnh theo máy ảnh =====
+   ma_hv   |        ten         | dia_diem  | di_san_qg 
+-----------+--------------------+-----------+-----------
+ HV-000005 | Tượng vũ nữ Apsara | Quảng Nam | t
+
+   may_anh    | so_anh 
+--------------+--------
+ Canon EOS R5 |     13
+ Nikon Z7     |     20
+
+===== S8 – Mảng, unnest WITH ORDINALITY: trải mục lục tài liệu có mục "Phả ký" =====
+   ma_hv   | thu_tu | ten_muc  
+-----------+--------+----------
+ HV-000008 |      1 | Lời tựa
+ HV-000008 |      2 | Phả ký
+ HV-000008 |      3 | Thế thứ
+ HV-000008 |      4 | Phụ chép
+
+===== S9 – Hàm PL/pgSQL đệ quy so_chi_tiet_thuc() =====
+   ma_hv   | so_chi_tiet_thuc 
+-----------+------------------
+ HV-000001 |                6
+ HV-000004 |               12
+
+===== S10 – Thủ tục có khóa dòng chuyen_phong() (R12) – chạy rồi ROLLBACK =====
+   ma_hv   |  ten   | trang_thai | ma_phong 
+-----------+--------+------------+----------
+ HV-000003 | Phố cũ | trung_bay  | P101
+
+===== S11 – SQL động EXECUTE format() và phòng chống SQL injection =====
+psql:sql/08_sql_nang_cao.sql:87: NOTICE:  SQL sinh ra: SELECT ma_hv::text, ten::text, nien_dai FROM tuong WHERE true AND lower(nien_dai) <= 1800 ORDER BY ma_hv
+   ma_hv   |        ten         |  nien_dai   
+-----------+--------------------+-------------
+ HV-000004 | Bộ tượng Tam Thế   | [1700,1800)
+ HV-000005 | Tượng vũ nữ Apsara | [1000,1100)
+
+psql:sql/08_sql_nang_cao.sql:88: NOTICE:  SQL sinh ra: SELECT ma_hv::text, ten::text, nien_dai FROM hien_vat WHERE true AND upper(nien_dai) > 1860 AND 'Nôm' = ANY (tu_khoa) ORDER BY ma_hv
+   ma_hv   |       ten       |  nien_dai   
+-----------+-----------------+-------------
+ HV-000008 | Gia phả họ Phạm | [1850,1900)
+ HV-000009 | Truyện thơ Nôm  | [1870,1871)
+
+psql:sql/08_sql_nang_cao.sql:89: NOTICE:  SQL sinh ra: SELECT ma_hv::text, ten::text, nien_dai FROM tranh WHERE true AND 'x'' OR ''1''=''1' = ANY (tu_khoa) ORDER BY ma_hv
+ ma_hv | ten | nien_dai 
+-------+-----+----------
+
+--- tên lớp ngoài danh sách trắng bị từ chối:
+psql:sql/08_sql_nang_cao.sql:94: NOTICE:  Bị từ chối: Lớp không hợp lệ: tranh; DROP TABLE bt.tranh
+===== S12 – View đối tượng (JSON lồng) và view vật chất hóa =====
+                  jsonb_pretty                  
+------------------------------------------------
+ {                                             +
+     "lop": "tuong",                           +
+     "ten": "Bộ tượng Tam Thế",                +
+     "ma_hv": "HV-000004",                     +
+     "so_anh": 4,                              +
+     "tac_gia": [                              +
+         {                                     +
+             "ho_ten": "Nghệ nhân khuyết danh",+
+             "vai_tro": "nghệ nhân"            +
+         }                                     +
+     ],                                        +
+     "tu_khoa": [                              +
+         "Phật giáo",                          +
+         "gỗ",                                 +
+         "chùa"                                +
+     ],                                        +
+     "nien_dai": {                             +
+         "tu": 1700,                           +
+         "den": 1799,                          +
+         "mo_ta": "Thế kỷ XVIII"               +
+     },                                        +
+     "kich_thuoc": {                           +
+         "cao_cm": 110.00,                     +
+         "dai_cm": 150.00,                     +
+         "rong_cm": 60.00                      +
+     },                                        +
+     "thanh_phan_goc": [                       +
+         {                                     +
+             "ten": "Tượng Quá khứ",           +
+             "so_luong": 1                     +
+         },                                    +
+         {                                     +
+             "ten": "Tượng Hiện tại",          +
+             "so_luong": 1                     +
+         },                                    +
+         {                                     +
+             "ten": "Tượng Vị lai",            +
+             "so_luong": 1                     +
+         }                                     +
+     ]                                         +
+ }
+
+     lop     | so_hien_vat | nam_som_nhat | nam_muon_nhat | so_tai_nguyen 
+-------------+-------------+--------------+---------------+---------------
+ tai_lieu_co |           3 |         1740 |          1870 |            13
+ tranh       |           3 |         1938 |          1965 |            13
+ tuong       |           3 |         1000 |          1950 |            10
+
