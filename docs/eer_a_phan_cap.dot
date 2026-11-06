@@ -1,0 +1,77 @@
+// Hình 4.1a – EER: hai phân cấp chuyên biệt hóa và thuộc tính (ký pháp Elmasri & Navathe)
+// Hình chữ nhật: kiểu thực thể · elip: thuộc tính · gạch chân: khóa · elip đôi: đa trị
+// elip nét đứt: dẫn xuất · elip có nhánh: phức hợp · vòng tròn d: chuyên biệt hóa không giao
+// đường đôi: tham gia toàn phần · ký hiệu ⊂ trên cạnh: lớp con
+graph EER_A {
+    graph [fontname="DejaVu Sans", fontsize=11, rankdir=TB, nodesep=0.25, ranksep=0.45,
+           label="Hình 4.1a – Phân cấp chuyên biệt hóa và thuộc tính", labelloc=t];
+    node  [fontname="DejaVu Sans", fontsize=10];
+    edge  [fontname="DejaVu Sans", fontsize=10];
+
+    // ---- Thực thể ----
+    HienVat     [shape=box, style=filled, fillcolor="#e8f0fe", label="HIỆN_VẬT"];
+    Tranh       [shape=box, label="TRANH"];
+    Tuong       [shape=box, label="TƯỢNG"];
+    TaiLieuCo   [shape=box, label="TÀI_LIỆU_CỔ"];
+    TaiNguyenSo [shape=box, style=filled, fillcolor="#e8f0fe", label="TÀI_NGUYÊN_SỐ"];
+    Anh         [shape=box, label="ẢNH"];
+    Video       [shape=box, label="VIDEO"];
+
+    // ---- Chuyên biệt hóa ----
+    d1 [shape=circle, label="d", width=0.35, fixedsize=true];
+    d2 [shape=circle, label="d", width=0.35, fixedsize=true];
+    HienVat -- d1 [color="black:invis:black", label=" toàn phần"];
+    d1 -- Tranh     [label="⊂"];
+    d1 -- Tuong     [label="⊂"];
+    d1 -- TaiLieuCo [label="⊂"];
+    TaiNguyenSo -- d2 [color="black:invis:black", label=" toàn phần"];
+    d2 -- Anh   [label="⊂"];
+    d2 -- Video [label="⊂"];
+
+    // ---- Thuộc tính của HIỆN_VẬT ----
+    hv_ma   [shape=ellipse, label=<<U>ma_hv</U>>];
+    hv_ten  [shape=ellipse, label="ten"];
+    hv_mt   [shape=ellipse, label="mo_ta"];
+    hv_tt   [shape=ellipse, label="trang_thai"];
+    hv_nn   [shape=ellipse, label="ngay_nhap"];
+    hv_tk   [shape=ellipse, peripheries=2, label="tu_khoa"];
+    hv_tgk  [shape=ellipse, peripheries=2, label="ten_goi_khac"];
+    hv_ttm  [shape=ellipse, peripheries=2, label="thuoc_tinh_mo_rong"];
+    hv_tuoi [shape=ellipse, style=dashed, label="tuoi"];
+    hv_nd   [shape=ellipse, label="nien_dai"];
+    nd_tu   [shape=ellipse, label="tu_nam"];
+    nd_den  [shape=ellipse, label="den_nam"];
+    nd_mt   [shape=ellipse, label="mo_ta"];
+    hv_kt   [shape=ellipse, label="kich_thuoc"];
+    kt_d    [shape=ellipse, label="dai_cm"];
+    kt_r    [shape=ellipse, label="rong_cm"];
+    kt_c    [shape=ellipse, label="cao_cm"];
+    {rank=same; hv_ma; hv_ten; hv_mt; hv_tt; hv_nn; hv_tk; hv_tgk; hv_ttm; hv_tuoi; hv_nd; hv_kt}
+    {rank=same; nd_tu; nd_den; nd_mt; kt_d; kt_r; kt_c}
+    hv_ma -- HienVat; hv_ten -- HienVat; hv_mt -- HienVat; hv_tt -- HienVat; hv_nn -- HienVat;
+    hv_tk -- HienVat; hv_tgk -- HienVat; hv_ttm -- HienVat; hv_tuoi -- HienVat;
+    hv_nd -- HienVat; hv_kt -- HienVat;
+    nd_tu -- hv_nd; nd_den -- hv_nd; nd_mt -- hv_nd;
+    kt_d -- hv_kt; kt_r -- hv_kt; kt_c -- hv_kt;
+    nd_tu -- HienVat [style=invis];
+
+    // ---- Thuộc tính riêng của lớp con ----
+    tr1 [shape=ellipse, label="chat_lieu_nen"]; tr2 [shape=ellipse, label="truong_phai"]; tr3 [shape=ellipse, label="co_khung"];
+    Tranh -- tr1; Tranh -- tr2; Tranh -- tr3;
+    tu1 [shape=ellipse, label="chat_lieu_chinh"]; tu2 [shape=ellipse, label="ky_thuat"]; tu3 [shape=ellipse, label="trong_luong_kg"];
+    Tuong -- tu1; Tuong -- tu2; Tuong -- tu3;
+    tl1 [shape=ellipse, label="ngon_ngu"]; tl2 [shape=ellipse, label="loai_chu"]; tl3 [shape=ellipse, label="so_trang"];
+    tl4 [shape=ellipse, label="tinh_trang_giay"];
+    tl5 [shape=ellipse, peripheries=2, label="muc_luc"]; tl6 [shape=ellipse, peripheries=2, label="con_dau"];
+    TaiLieuCo -- tl1; TaiLieuCo -- tl2; TaiLieuCo -- tl3; TaiLieuCo -- tl4; TaiLieuCo -- tl5; TaiLieuCo -- tl6;
+
+    // ---- Thuộc tính TÀI_NGUYÊN_SỐ và lớp con ----
+    tn0 [shape=ellipse, label=<<U>ma_tn</U>>]; tn1 [shape=ellipse, label="uri"]; tn2 [shape=ellipse, label="dinh_dang"];
+    tn3 [shape=ellipse, label="kich_thuoc_byte"]; tn4 [shape=ellipse, label="chu_thich"]; tn5 [shape=ellipse, label="la_dai_dien"];
+    tn0 -- TaiNguyenSo; tn1 -- TaiNguyenSo; tn2 -- TaiNguyenSo; tn3 -- TaiNguyenSo; tn4 -- TaiNguyenSo; tn5 -- TaiNguyenSo;
+    a1 [shape=ellipse, label="rong_px"]; a2 [shape=ellipse, label="cao_px"]; a3 [shape=ellipse, label="goc_chup"];
+    a4 [shape=ellipse, peripheries=2, label="exif"];
+    Anh -- a1; Anh -- a2; Anh -- a3; Anh -- a4;
+    v1 [shape=ellipse, label="thoi_luong_giay"]; v2 [shape=ellipse, label="do_phan_giai"];
+    Video -- v1; Video -- v2;
+}

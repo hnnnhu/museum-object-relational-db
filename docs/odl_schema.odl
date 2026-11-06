@@ -1,0 +1,160 @@
+// =====================================================================
+// Lược đồ ODMG 3.0 (ODL) – Hệ thống bảo tàng số – bản đã hoàn thiện
+// 16 lớp, 2 struct, 1 enum, 1 exception.
+// Đủ kiểu tập hợp: set, bag, list, array (attribute), dictionary; quan hệ nghịch đảo; thừa kế; extent; key.
+// Thay đổi so với bản trước:
+//   + exception PhongDaDay (được dùng trong raises)
+//   + lớp kết hợp ThamGiaTrienLam (liên kết M:N có thuộc tính vi_tri – theo quy tắc ánh xạ 5.1.1)
+//   + attribute list<string> ten_goi_khac, attribute bag<string> con_dau
+//   + phương thức ten_lop(), tat_ca_hau_due()
+//   ~ thống nhất tên với UML: thoi_luong_giay, do_phan_giai, kich_thuoc_byte, chu_thich
+// =====================================================================
+
+// ===== Kiểu literal =====
+struct KichThuoc { float dai_cm; float rong_cm; float cao_cm; };
+struct NienDai   { short tu_nam; short den_nam; string mo_ta; };   // den_nam: năm cuối (đóng)
+enum   TrangThai { trung_bay, luu_kho, bao_quan, cho_muon };
+exception PhongDaDay { string ma_phong; short suc_chua; };
+
+// ===== Lớp gốc (trừu tượng theo quy ước – ODL không có từ khóa abstract) =====
+class HienVat
+( extent tat_ca_hien_vat
+  key    ma_hv )
+{
+    attribute string                     ma_hv;
+    attribute string                     ten;
+    attribute string                     mo_ta;
+    attribute NienDai                    nien_dai;
+    attribute KichThuoc                  kich_thuoc;
+    attribute TrangThai                  trang_thai;
+    attribute date                       ngay_nhap;
+    attribute set<string>                tu_khoa;        // set: không trùng, không thứ tự
+    attribute list<string>               ten_goi_khac;   // list: có thứ tự ưu tiên
+    attribute dictionary<string, string> thuoc_tinh;     // thuộc tính mở rộng tùy loại
+
+    relationship set<SangTac>         co_tac_gia     inverse SangTac::cua_hien_vat;
+    relationship set<ChatLieu>        lam_bang       inverse ChatLieu::dung_trong;
+    relationship set<ThanhPhan>       gom_thanh_phan inverse ThanhPhan::thuoc_hien_vat;
+    relationship BoSuuTap             thuoc_bst      inverse BoSuuTap::gom_hien_vat;
+    relationship PhongTrungBay        dat_tai        inverse PhongTrungBay::trung_bay;
+    relationship set<ThamGiaTrienLam> tham_gia       inverse ThamGiaTrienLam::cua_hien_vat;
+    relationship list<TaiNguyenSo>    co_tai_nguyen  inverse TaiNguyenSo::cua_hien_vat;
+    relationship list<LichSuBaoQuan>  lich_su        inverse LichSuBaoQuan::cua_hien_vat;
+
+    short       tuoi();                 // dẫn xuất từ nien_dai (theo tu_nam)
+    float       the_tich_cm3();
+    long        tong_thanh_phan();      // tổng so_luong của mọi nút
+    bag<string> cac_chat_lieu();        // chất liệu theo từng nút thành phần, giữ phần tử trùng
+    string      ten_lop();              // tên lớp thực – ghi đè ở mỗi lớp con
+    string      mo_ta_ngan();           // đa hình – ghi đè ở mỗi lớp con
+    void        chuyen_phong(in string ma_phong) raises (PhongDaDay);
+};
+
+// ===== Lớp con của HienVat (chuyên biệt hóa không giao, toàn phần) =====
+class Tranh extends HienVat ( extent tat_ca_tranh ) {
+    attribute string  chat_lieu_nen;
+    attribute string  truong_phai;
+    attribute boolean co_khung;
+    string ten_lop();
+    string mo_ta_ngan();
+};
+class Tuong extends HienVat ( extent tat_ca_tuong ) {
+    attribute string chat_lieu_chinh;
+    attribute string ky_thuat;
+    attribute float  trong_luong_kg;
+    string ten_lop();
+    string mo_ta_ngan();
+};
+class TaiLieuCo extends HienVat ( extent tat_ca_tai_lieu_co ) {
+    attribute string        ngon_ngu;
+    attribute string        loai_chu;
+    attribute short         so_trang;
+    attribute string        tinh_trang_giay;
+    attribute array<string> muc_luc;     // array: truy cập muc_luc[i], i từ 0
+    attribute bag<string>   con_dau;     // bag: một con dấu có thể đóng nhiều lần
+    string ten_lop();
+    string mo_ta_ngan();
+};
+
+// ===== Cấu trúc thành phần đệ quy =====
+class ThanhPhan ( extent tat_ca_thanh_phan ) {
+    attribute string ten;
+    attribute short  so_luong;
+    attribute string chat_lieu;
+    relationship HienVat        thuoc_hien_vat inverse HienVat::gom_thanh_phan;
+    relationship ThanhPhan      thuoc_cha      inverse ThanhPhan::gom_con;
+    relationship set<ThanhPhan> gom_con        inverse ThanhPhan::thuoc_cha;
+    short          muc();               // độ sâu trong cây
+    set<ThanhPhan> tat_ca_hau_due();    // mọi nút con cháu, độ sâu tùy ý
+};
+
+// ===== Lớp kết hợp (liên kết M:N có thuộc tính) =====
+class SangTac ( extent tat_ca_sang_tac ) {
+    attribute string vai_tro;
+    relationship HienVat cua_hien_vat inverse HienVat::co_tac_gia;
+    relationship TacGia  cua_tac_gia  inverse TacGia::sang_tac;
+};
+class ThamGiaTrienLam ( extent tat_ca_tham_gia ) {
+    attribute string vi_tri;
+    relationship HienVat  cua_hien_vat  inverse HienVat::tham_gia;
+    relationship TrienLam cua_trien_lam inverse TrienLam::gom;
+};
+
+// ===== Các lớp liên quan =====
+class TacGia ( extent tat_ca_tac_gia ) {
+    attribute string ho_ten;
+    attribute string but_danh;
+    attribute short  nam_sinh;
+    attribute short  nam_mat;
+    attribute string quoc_tich;
+    relationship set<SangTac> sang_tac inverse SangTac::cua_tac_gia;
+};
+class ChatLieu ( extent tat_ca_chat_lieu key ten ) {
+    attribute string ten;
+    relationship set<HienVat> dung_trong inverse HienVat::lam_bang;
+};
+class BoSuuTap ( extent tat_ca_bst key ten ) {
+    attribute string ten;
+    attribute string mo_ta;
+    relationship set<HienVat> gom_hien_vat inverse HienVat::thuoc_bst;
+};
+class PhongTrungBay ( extent tat_ca_phong key ma_phong ) {
+    attribute string ma_phong;
+    attribute string ten;
+    attribute short  tang;
+    attribute short  suc_chua;
+    relationship set<HienVat> trung_bay inverse HienVat::dat_tai;
+};
+class TrienLam ( extent tat_ca_trien_lam ) {
+    attribute string ten;
+    attribute date   tu_ngay;
+    attribute date   den_ngay;
+    relationship set<ThamGiaTrienLam> gom inverse ThamGiaTrienLam::cua_trien_lam;
+};
+class LichSuBaoQuan ( extent tat_ca_lich_su ) {
+    attribute date   ngay;
+    attribute string hang_muc;
+    attribute string mo_ta;
+    attribute string nguoi_thuc_hien;
+    relationship HienVat cua_hien_vat inverse HienVat::lich_su;
+};
+
+// ===== Phân cấp tài nguyên số (trừu tượng; không giao, toàn phần) =====
+class TaiNguyenSo ( extent tat_ca_tai_nguyen ) {
+    attribute string  uri;
+    attribute string  dinh_dang;
+    attribute long    kich_thuoc_byte;
+    attribute string  chu_thich;
+    attribute boolean la_dai_dien;
+    relationship HienVat cua_hien_vat inverse HienVat::co_tai_nguyen;
+};
+class Anh extends TaiNguyenSo ( extent tat_ca_anh ) {
+    attribute long   rong_px;
+    attribute long   cao_px;
+    attribute string goc_chup;
+    attribute dictionary<string, string> exif;
+};
+class Video extends TaiNguyenSo ( extent tat_ca_video ) {
+    attribute long   thoi_luong_giay;
+    attribute string do_phan_giai;
+};
