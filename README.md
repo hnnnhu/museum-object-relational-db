@@ -57,7 +57,7 @@ python3 scripts/09_impedance.py              # lệch pha trở kháng
 |---|---|---|
 | `docs/odl_schema.odl` | Lược đồ ODMG ODL đầy đủ (16 lớp) | 5.1 |
 | `docs/eer_a_phan_cap.*`, `docs/eer_b_lien_ket.*` | EER ký pháp Elmasri (nguồn `.dot`) | 4 |
-| `docs/uml.*` (nguồn `uml.py`) | Sơ đồ lớp UML | 4.4 |
+| `docs/uml_tong_quan.*`, `docs/uml_chi_tiet.*` (nguồn `uml_svg.py`) | Sơ đồ lớp UML: tổng quan liên kết và chi tiết thuộc tính | 4.3, 4.4 |
 | `sql/01_schema_A.sql` | Phương án A: kiểu, bảng kế thừa, bảng định danh, trigger, hàm, thủ tục, view | 6 |
 | `sql/02_seed.sql` | Dữ liệu mẫu 9 hiện vật | 6–7 |
 | `sql/03_tests.sql` | Kiểm thử toàn vẹn V1–V2, T1–T20 | 8.2 |
