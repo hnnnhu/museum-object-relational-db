@@ -4,7 +4,7 @@
 // đường đôi: tham gia toàn phần · ký hiệu ⊂ trên cạnh: lớp con
 graph EER_A {
     graph [fontname="DejaVu Sans", fontsize=11, rankdir=TB, nodesep=0.25, ranksep=0.45,
-           label="Hình 4.1a – Phân cấp chuyên biệt hóa và thuộc tính", labelloc=t];
+           ];
     node  [fontname="DejaVu Sans", fontsize=10];
     edge  [fontname="DejaVu Sans", fontsize=10];
 

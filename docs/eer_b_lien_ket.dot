@@ -3,7 +3,7 @@
 // Chỉ ghi thuộc tính khóa của thực thể (thuộc tính đầy đủ ở Hình 4.1a) và thuộc tính của liên kết.
 graph EER_B {
     graph [fontname="DejaVu Sans", fontsize=11, layout=neato, overlap=false, sep="+14", splines=true,
-           label="Hình 4.1b – Các kiểu liên kết", labelloc=t];
+           ];
     node  [fontname="DejaVu Sans", fontsize=10];
     edge  [fontname="DejaVu Sans", fontsize=11, len=1.3];
 

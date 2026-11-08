@@ -1,0 +1,25 @@
+// Hình 4.1a – EER: hai phân cấp chuyên biệt hóa và thuộc tính (ký pháp Elmasri & Navathe)
+// Hình chữ nhật: kiểu thực thể · elip: thuộc tính · gạch chân: khóa · elip đôi: đa trị
+// elip nét đứt: dẫn xuất · elip có nhánh: phức hợp · vòng tròn d: chuyên biệt hóa không giao
+// đường đôi: tham gia toàn phần · ký hiệu ⊂ trên cạnh: lớp con
+graph EER_A2 {
+    graph [fontname="DejaVu Sans", fontsize=11, rankdir=TB, nodesep=0.25, ranksep=0.45,
+           ];
+    node  [fontname="DejaVu Sans", fontsize=13];
+    edge  [fontname="DejaVu Sans", fontsize=13];
+    TaiNguyenSo [shape=box, style=filled, fillcolor="#e8f0fe", label="TÀI_NGUYÊN_SỐ"];
+    Anh         [shape=box, label="ẢNH"];
+    Video       [shape=box, label="VIDEO"];
+    d2 [shape=circle, label="d", width=0.35, fixedsize=true];
+    TaiNguyenSo -- d2 [color="black:invis:black", label=" toàn phần"];
+    d2 -- Anh   [label="⊂"];
+    d2 -- Video [label="⊂"];
+    tn0 [shape=ellipse, label=<<U>ma_tn</U>>]; tn1 [shape=ellipse, label="uri"]; tn2 [shape=ellipse, label="dinh_dang"];
+    tn3 [shape=ellipse, label="kich_thuoc_byte"]; tn4 [shape=ellipse, label="chu_thich"]; tn5 [shape=ellipse, label="la_dai_dien"];
+    tn0 -- TaiNguyenSo; tn1 -- TaiNguyenSo; tn2 -- TaiNguyenSo; tn3 -- TaiNguyenSo; tn4 -- TaiNguyenSo; tn5 -- TaiNguyenSo;
+    a1 [shape=ellipse, label="rong_px"]; a2 [shape=ellipse, label="cao_px"]; a3 [shape=ellipse, label="goc_chup"];
+    a4 [shape=ellipse, peripheries=2, label="exif"];
+    Anh -- a1; Anh -- a2; Anh -- a3; Anh -- a4;
+    v1 [shape=ellipse, label="thoi_luong_giay"]; v2 [shape=ellipse, label="do_phan_giai"];
+    Video -- v1; Video -- v2;
+}
